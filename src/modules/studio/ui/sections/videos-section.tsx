@@ -18,10 +18,11 @@ import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail";
 import { snakeCaseToTitleCase } from "@/lib/utils";
 import { format } from "date-fns";
 import { Globe2Icon, LockIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const VideosSection = () => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<VideosSectionSkeleton />}>
       <ErrorBoundary fallback={<div>Error</div>}>
         <VideosSectionSuspense />
       </ErrorBoundary>
@@ -29,6 +30,65 @@ export const VideosSection = () => {
   );
 };
 
+const VideosSectionSkeleton = () => {
+  return (
+    <div>
+      <div className="border-y">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="pl-6 w-[510px]">Video</TableHead>
+              <TableHead>Visibility</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead className="text-right">Views</TableHead>
+              <TableHead className="text-right">Comments</TableHead>
+              <TableHead className="text-right pr-6">Likes</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell className="pl-6 w-[510px]">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="w-36 h-20" />
+                    <div className="flex flex-col gap-2">
+                      <Skeleton className="w-[100px] h-4" />
+                      <Skeleton className="w-[150px] h-3" />
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="w-20 h-4" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="w-16 h-4" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="w-24 h-4" />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Skeleton className="w-12 h-4 ml-auto" />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Skeleton className="w-12 h-4 ml-auto" />
+                </TableCell>
+                <TableCell className="text-right pr-6">
+                  <Skeleton className="w-12 h-4 ml-auto" />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <InfiniteScroll
+        hasNextPage={false}
+        isFetchingNextPage={false}
+        fetchNextPage={() => {}}
+      />
+    </div>
+  );
+};
 export const VideosSectionSuspense = () => {
   const [videos, query] = trpc.studio.getMany.useSuspenseInfiniteQuery(
     { limit: INFINITE_QUERY_LIMIT },
@@ -98,9 +158,13 @@ export const VideosSectionSuspense = () => {
                     <TableCell className="text-sm truncate">
                       {format(new Date(video.createdAt), "d MMM yyyy")}
                     </TableCell>
-                    <TableCell className="text-right">Views</TableCell>
-                    <TableCell className="text-right">Comments</TableCell>
-                    <TableCell className="text-right pr-6">Likes</TableCell>
+                    <TableCell className="text-right text-sm">Views</TableCell>
+                    <TableCell className="text-right text-sm">
+                      Comments
+                    </TableCell>
+                    <TableCell className="text-right text-sm pr-6">
+                      Likes
+                    </TableCell>
                   </TableRow>
                 </Link>
               ))}
