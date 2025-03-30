@@ -4,7 +4,10 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: "image.mux.com",
+        hostname: "utfs.io",
+      },
+      {
+        hostname: "7zmcxdb9d8.ufs.sh",
       },
     ],
   },
