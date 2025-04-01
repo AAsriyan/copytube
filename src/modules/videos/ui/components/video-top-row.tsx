@@ -37,15 +37,15 @@ export const VideoTopRow = ({ video }: VideoTopRowProps) => {
     return Intl.NumberFormat("en", {
       notation: "compact",
       maximumFractionDigits: 1,
-    }).format(1000);
-  }, []);
+    }).format(video.viewCount);
+  }, [video.viewCount]);
 
   const expandedView = useMemo(() => {
     return Intl.NumberFormat("en", {
       notation: "standard",
       maximumFractionDigits: 1,
-    }).format(1000);
-  }, []);
+    }).format(video.viewCount);
+  }, [video.viewCount]);
 
   const compactDate = useMemo(() => {
     return formatDistanceToNow(video.createdAt, {
