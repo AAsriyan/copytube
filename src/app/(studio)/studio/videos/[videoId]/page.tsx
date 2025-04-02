@@ -10,6 +10,8 @@ export default async function VideoPage({ params }: VideoPageProps) {
   const { videoId } = await params;
   void trpc.studio.getOne.prefetch({ id: videoId });
   void trpc.categories.getMany.prefetch();
+  // TODO: Later change to infinite query
+  void trpc.comments.getMany.prefetch({ videoId });
 
   return (
     <HydrateClient>

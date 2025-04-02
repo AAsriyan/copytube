@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { VideoPlayer } from "../components/video-player";
+import { VideoPlayer, VideoPlayerSkeleton } from "../components/video-player";
 import { VideoBanner } from "../components/video-banner";
-import { VideoTopRow } from "../components/video-top-row";
+import { VideoTopRow, VideoTopRowSkeleton } from "../components/video-top-row";
 import { useUser } from "@clerk/nextjs";
 
 interface VideoSectionProps {
@@ -24,7 +24,12 @@ export function VideoSection({ videoId }: VideoSectionProps) {
 }
 
 const VideoSectionSkeleton = () => {
-  return <div>VideoSectionSkeleton</div>;
+  return (
+    <div className="flex flex-col gap-4">
+      <VideoPlayerSkeleton />
+      <VideoTopRowSkeleton />
+    </div>
+  );
 };
 
 const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
@@ -50,7 +55,7 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
     <>
       <div
         className={cn(
-          "aspect-video bg-black rounded-xl overflow-hidden- relative",
+          "aspect-video bg-black rounded-xl overflow-hidden relative",
           video.muxStatus !== "ready" && "rounded-b-none"
         )}
       >
