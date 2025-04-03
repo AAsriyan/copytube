@@ -16,6 +16,10 @@ export default async function VideoPage({ params }: VideoPageProps) {
     videoId,
     limit: INFINITE_QUERY_LIMIT,
   });
+  void trpc.suggestions.getMany.prefetchInfinite({
+    videoId,
+    limit: INFINITE_QUERY_LIMIT,
+  });
 
   return (
     <HydrateClient>
