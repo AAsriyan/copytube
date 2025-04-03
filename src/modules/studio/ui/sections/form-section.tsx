@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { videoUpdateSchema } from "@/db/schema";
 import { snakeCaseToTitleCase } from "@/lib/utils";
@@ -37,6 +38,7 @@ import {
   Loader2Icon,
   LockIcon,
   MoreVerticalIcon,
+  RefreshCcwIcon,
   RotateCcwIcon,
   SparklesIcon,
   TrashIcon,
@@ -49,9 +51,8 @@ import { ErrorBoundary } from "react-error-boundary";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
 import { ThumbnailGenerateModal } from "../components/thumbnail-generate-modal";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
 
 interface FormSectionProps {
   videoId: string;
@@ -156,6 +157,17 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     },
   });
 
+  const revalidate = trpc.videos.revalidate.useMutation({
+    onSuccess: () => {
+      utils.studio.getMany.invalidate();
+      utils.studio.getOne.invalidate({ id: videoId });
+      toast.success("Video revalidated");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   const restoreThumbnail = trpc.videos.restoreThumbnail.useMutation({
     onSuccess: () => {
       utils.studio.getOne.invalidate({ id: videoId });
@@ -247,6 +259,14 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                     <MoreVerticalIcon />
                   </Button>
                 </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => revalidate.mutate({ id: videoId })}
+                  >
+                    <RefreshCcwIcon className="size-4 mr-2" />
+                    Revalidate
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem
                     onClick={() => remove.mutate({ id: videoId })}
