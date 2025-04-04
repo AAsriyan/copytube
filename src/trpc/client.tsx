@@ -9,7 +9,6 @@ import { makeQueryClient } from "./query-client";
 import type { AppRouter } from "./routers/_app";
 import superjson from "superjson";
 import { APP_URL } from "@/constants";
-
 export const trpc = createTRPCReact<AppRouter>();
 let clientQueryClientSingleton: QueryClient;
 
@@ -22,8 +21,11 @@ function getQueryClient() {
   return (clientQueryClientSingleton ??= makeQueryClient());
 }
 function getUrl() {
-  if (typeof window !== "undefined") return "";
-  return `${APP_URL}/api/trpc`;
+  const base = (() => {
+    if (typeof window !== "undefined") return "";
+    return APP_URL;
+  })();
+  return `${base}/api/trpc`;
 }
 export function TRPCProvider(
   props: Readonly<{
