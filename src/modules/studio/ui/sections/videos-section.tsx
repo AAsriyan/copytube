@@ -89,6 +89,7 @@ const VideosSectionSkeleton = () => {
     </div>
   );
 };
+
 export const VideosSectionSuspense = () => {
   const [videos, query] = trpc.studio.getMany.useSuspenseInfiniteQuery(
     { limit: INFINITE_QUERY_LIMIT },
@@ -118,7 +119,6 @@ export const VideosSectionSuspense = () => {
                   href={`/studio/videos/${video.id}`}
                   key={video.id}
                   legacyBehavior
-                  prefetch={true}
                 >
                   <TableRow className="cursor-pointer">
                     <TableCell className="pl-6 w-[510px]">

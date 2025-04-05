@@ -2,13 +2,30 @@
 
 import { SearchIcon, XIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { APP_URL } from "@/constants";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+
 export const SearchInput = () => {
+  return (
+    <Suspense fallback={<SearchInputSkeleton />}>
+      <SearchInputSuspense />
+    </Suspense>
+  );
+};
+
+const SearchInputSkeleton = () => {
+  return (
+    <div className="flex items-center justify-center">
+      <Skeleton className="w-full h-10" />
+    </div>
+  );
+};
+
+const SearchInputSuspense = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const query = searchParams.get("query") || "";
   const categoryId = searchParams.get("categoryId") || "";
 
