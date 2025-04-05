@@ -14,7 +14,6 @@ interface VideoReactionsProps {
   viewerReaction: VideoGetOneOutput["viewerReaction"];
 }
 
-// TODO: Add reactions
 export const VideoReactions = ({
   videoId,
   likes,
