@@ -160,7 +160,7 @@ export const VideoRowCard = ({
             )}
           </Link>
           <div className="flex-none">
-            <VideoMenu videoId={data.id} onRemove={onRemove} />
+            <VideoMenu videoId={data.id} onRemove={onRemove} position={0} />
           </div>
         </div>
       </div>

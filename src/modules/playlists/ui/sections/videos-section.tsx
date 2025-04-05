@@ -13,18 +13,23 @@ import {
 import { trpc } from "@/trpc/client";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { toast } from "sonner";
 
-export const HistoryVideosSection = () => {
+interface VideosSectionProps {
+  playlistId: string;
+}
+
+export const VideosSection = ({ playlistId }: VideosSectionProps) => {
   return (
-    <Suspense fallback={<HistoryVideosSectionSkeleton />}>
+    <Suspense fallback={<VideosSectionSkeleton />}>
       <ErrorBoundary fallback={<p>Error</p>}>
-        <HistoryVideosSectionSuspense />
+        <VideosSectionSuspense playlistId={playlistId} />
       </ErrorBoundary>
     </Suspense>
   );
 };
 
-const HistoryVideosSectionSkeleton = () => {
+const VideosSectionSkeleton = () => {
   return (
     <div>
       <div className="hidden flex-col gap-4 md:flex">
@@ -41,13 +46,29 @@ const HistoryVideosSectionSkeleton = () => {
   );
 };
 
-const HistoryVideosSectionSuspense = () => {
-  const [videos, query] = trpc.playlists.getHistory.useSuspenseInfiniteQuery(
+const VideosSectionSuspense = ({ playlistId }: VideosSectionProps) => {
+  const utils = trpc.useUtils();
+
+  const [videos, query] = trpc.playlists.getVideos.useSuspenseInfiniteQuery(
     {
       limit: INFINITE_QUERY_LIMIT,
+      playlistId,
     },
     { getNextPageParam: (lastPage) => lastPage.nextCursor }
   );
+
+  const removeVideo = trpc.playlists.removeVideo.useMutation({
+    onSuccess: (data) => {
+      toast.success("Video removed from playlist");
+      utils.playlists.getMany.invalidate();
+      utils.playlists.getManyForVideo.invalidate({ videoId: data.videoId });
+      utils.playlists.getOne.invalidate({ playlistId: data.playlistId });
+      utils.playlists.getVideos.invalidate({ playlistId: data.playlistId });
+    },
+    onError: () => {
+      toast.error("Failed to remove video from playlist");
+    },
+  });
 
   return (
     <>
@@ -55,14 +76,27 @@ const HistoryVideosSectionSuspense = () => {
         {videos.pages
           .flatMap((page) => page.items)
           .map((video) => (
-            <VideoRowCard key={video.id} data={video} size="compact" />
+            <VideoRowCard
+              key={video.id}
+              data={video}
+              size="compact"
+              onRemove={() =>
+                removeVideo.mutate({ playlistId, videoId: video.id })
+              }
+            />
           ))}
       </div>
       <div className="flex flex-col gap-4 gap-y-10 md:hidden">
         {videos.pages
           .flatMap((page) => page.items)
           .map((video) => (
-            <VideoGridCard key={video.id} data={video} />
+            <VideoGridCard
+              key={video.id}
+              data={video}
+              onRemove={() =>
+                removeVideo.mutate({ playlistId, videoId: video.id })
+              }
+            />
           ))}
       </div>
       <InfiniteScroll
