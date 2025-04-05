@@ -211,7 +211,6 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     update.mutate({ id: videoId, ...data });
   };
 
-  // TODO: Change if deploying outside of Vercel
   const fullUrl = `${APP_URL}/videos/${video.id}`;
   const [isCopied, setIsCopied] = useState(false);
 
@@ -451,6 +450,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                       </p>
                       <div className="flex items-center gap-x-2">
                         <Link
+                          prefetch
                           href={`/videos/${video.id}`}
                           className="text-sm text-muted-foreground"
                         >
